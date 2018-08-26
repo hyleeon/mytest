@@ -35,6 +35,7 @@ func (s *Server) Start() {
 		fmt.Println("Start server error", err.Error());
 		return;
 	}
+	fmt.Printf("Server started at %s:%s:%d\n", s.protocal, s.host, s.port);
 	for {
 		conn, err := l.Accept();
 		if err != nil {
