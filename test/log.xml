@@ -1,0 +1,9 @@
+<logging>
+  <filter enabled="true">
+    <tag>stdout</tag>
+    <type>console</type>
+    <!-- level is (:?FINEST|FINE|DEBUG|TRACE|INFO|WARNING|ERROR) -->
+    <level>DEBUG</level>
+    <property name="format">%M</property>
+  </filter>
+</logging>
