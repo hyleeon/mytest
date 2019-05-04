@@ -3,10 +3,11 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 	"os"
-	"errors"
+	"unicode/utf8"
 )
 
 // StartClient ....
@@ -29,18 +30,21 @@ func StartClient() {
 		if len(line) == 1 {
 			continue
 		}
-		for i, c := range line {
-			fmt.Printf("1 Index %d %d\n", i, c)
-		}
+
+		fmt.Printf("Read str len %d\n", utf8.RuneCountInString(line)-1)
+
+		// for i, c := range line {
+		// 	fmt.Printf("1 Index %d %d\n", i, c)
+		// }
 		line, err = substring(&line, 0, len(line)-1, true)
 		if err != nil {
 			//
 			fmt.Println("substring msg error", err)
-			continue;
+			continue
 		}
-		for i, c := range line {
-			fmt.Printf("2 Index %d %d\n", i, c)
-		}
+		// for i, c := range line {
+		// 	fmt.Printf("2 Index %d %d\n", i, c)
+		// }
 		b := ([]byte)(line)
 		n, err := conn.Write(b)
 		if err != nil {
@@ -54,27 +58,27 @@ func StartClient() {
 func substring(source *string, start int, end int, usedStrLen bool) (string, error) {
 
 	if source == nil {
-		return "", errors.New("Source is nil");
+		return "", errors.New("Source is nil")
 	}
 
 	if start < 0 || start > end || end < 0 {
 		msg := fmt.Sprintf("Invalide index: start=%d, end=%d", start, end)
-		return "", errors.New(msg);
+		return "", errors.New(msg)
 	}
 
-	if usedStrLen && start ==0 && len(*source) == end {
-		return *source, nil;
+	if usedStrLen && start == 0 && len(*source) == end {
+		return *source, nil
 	}
 
 	if usedStrLen {
-		return substringWithLenCalIndex(source, start, end), nil;
+		return substringWithLenCalIndex(source, start, end), nil
 	}
-	return substringWithSpecifyIndex(source, start, end), nil;
+	return substringWithSpecifyIndex(source, start, end), nil
 }
 
 func substringWithLenCalIndex(source *string, start int, end int) string {
 
-	fmt.Printf("Param %d, %d\n", start, end)
+	// fmt.Printf("Param %d, %d\n", start, end)
 
 	s := *source
 
@@ -86,7 +90,7 @@ func substringWithLenCalIndex(source *string, start int, end int) string {
 
 	for i, c := range s {
 		count += (i - pre)
-		fmt.Printf("3 Index %d %d %d %s\n", i, count, c, string(c))
+		// fmt.Printf("3 Index %d %d %d %s\n", i, count, c, string(c))
 		if count >= start && count < end {
 			buf.WriteRune(c)
 		}

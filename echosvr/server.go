@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"strconv"
 	"sync"
@@ -9,7 +10,7 @@ import (
 
 // Server ...
 type Server struct {
-	protocal string
+	protocol string
 	host     string
 	port     int
 }
@@ -30,39 +31,39 @@ func NewServer(p, h string, port int) *Server {
 
 // Start ...
 func (s *Server) Start() {
-	l, err := net.Listen(s.protocal, s.host+":"+strconv.Itoa(s.port))
+	l, err := net.Listen(s.protocol, s.host+":"+strconv.Itoa(s.port))
 	if err != nil {
-		fmt.Println("Start server error", err.Error());
-		return;
+		fmt.Println("Start server error", err.Error())
+		return
 	}
-	fmt.Printf("Server started at %s:%s:%d\n", s.protocal, s.host, s.port);
+	fmt.Printf("Server started at %s:%s:%d\n", s.protocol, s.host, s.port)
 	for {
-		conn, err := l.Accept();
+		conn, err := l.Accept()
 		if err != nil {
-			fmt.Println("Server accept error, shutdown...", err.Error());
-			return;
+			fmt.Println("Server accept error, shutdown...", err.Error())
+			return
 		}
-		go handlConn(conn);
+		go handelConn(conn)
 	}
 }
 
-func handlConn(conn net.Conn) {
-
+func handelConn(conn net.Conn) {
 
 	for {
-		var b []byte;
-		b = make([]byte, 128);
-		n, err := conn.Read(b);
-		if(err != nil) {
+		var b []byte
+		b = make([]byte, 128)
+		n, err := conn.Read(b)
+		if err != nil {
 			// ...
-			fmt.Println("Read error", err.Error());
-			return;
+			if io.EOF == err {
+				fmt.Println("Remote closed.")
+			} else {
+				fmt.Println("Read error", err.Error())
+			}
+			return
 		}
-		var s = string(b[:n]);
-		fmt.Printf("Rcv %d bytes: %s\n", n, s);
-		//conn.Close();
-		//return;
+		var s = string(b[:n])
+		fmt.Printf("Rcv %d bytes: %s\n", n, s)
 	}
-	
-}
 
+}
